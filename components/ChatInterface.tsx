@@ -73,79 +73,141 @@ export default function ChatInterface({ chatId }: { chatId: string }) {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-4xl">
-      <Button
-        variant="ghost"
-        className="mb-4 text-white hover:text-purple-300"
-        onClick={() => router.push('/')}
-      >
-        <ArrowLeft className="mr-2 h-4 w-4" />
-        Back to Chat Rooms
-      </Button>
-      <Card className="bg-gradient-to-b from-purple-900/50 to-purple-900/10 border border-purple-500/20 backdrop-blur-xl">
-        <CardContent className="p-6">
-          <div className="flex items-center justify-center mb-6">
-            <Avatar className="h-12 w-12 mr-4">
-              <AvatarImage src={chatbot.avatar} alt={chatbot.name} />
-              <AvatarFallback>{chatbot.name[0]}</AvatarFallback>
-            </Avatar>
-            <h2 className="text-2xl font-bold text-white">{chatbot.name}</h2>
-          </div>
-          <div className="space-y-4 h-[60vh] overflow-y-auto mb-4 p-4">
-            {messages.map((message) => (
-              <div
-                key={message.id}
-                className={`flex ${
-                  message.sender === 'user' ? 'justify-end' : 'justify-start'
-                }`}
-              >
-                {message.sender === 'bot' && (
-                  <Avatar className="h-8 w-8 mr-2">
-                    <AvatarImage src={chatbot.avatar} alt={chatbot.name} />
-                    <AvatarFallback>{chatbot.name[0]}</AvatarFallback>
-                  </Avatar>
-                )}
-                <div
-                  className={`max-w-[70%] p-3 rounded-2xl ${
-                    message.sender === 'user'
-                      ? 'bg-purple-600 text-white rounded-tr-none'
-                      : 'bg-gray-700 text-gray-200 rounded-tl-none'
-                  }`}
-                >
-                  {message.text}
-                </div>
-                {message.sender === 'user' && (
-                  <Avatar className="h-8 w-8 ml-2">
-                    <AvatarFallback>U</AvatarFallback>
-                  </Avatar>
-                )}
+    <div className="min-h-screen relative overflow-hidden bg-zinc-900">
+      <div className="absolute inset-0 bg-gradient-to-b from-zinc-900 via-purple-950/20 to-zinc-900" />
+      
+      <div className="starfield">
+        {Array.from({ length: 30 }).map((_, i) => (
+          <div
+            key={`tiny-star-${i}`}
+            className="star star-tiny"
+            style={{
+              top: `${Math.random() * 100}%`,
+              left: `${Math.random() * 100}%`,
+              animationDelay: `${Math.random() * 3}s`
+            }}
+          />
+        ))}
+        
+        {Array.from({ length: 20 }).map((_, i) => (
+          <div
+            key={`small-star-${i}`}
+            className="star star-small"
+            style={{
+              top: `${Math.random() * 100}%`,
+              left: `${Math.random() * 100}%`,
+              animationDelay: `${Math.random() * 4}s`
+            }}
+          />
+        ))}
+        
+        {Array.from({ length: 10 }).map((_, i) => (
+          <div
+            key={`bright-star-${i}`}
+            className="star star-medium star-bright"
+            style={{
+              top: `${Math.random() * 100}%`,
+              left: `${Math.random() * 100}%`,
+              animationDelay: `${Math.random() * 5}s`
+            }}
+          />
+        ))}
+        
+        {Array.from({ length: 8 }).map((_, i) => (
+          <div
+            key={`float-star-${i}`}
+            className={`star star-small star-bright ${i % 2 === 0 ? 'star-float' : 'star-float-reverse'}`}
+            style={{
+              top: `${Math.random() * 100}%`,
+              left: `${Math.random() * 100}%`,
+              animationDelay: `${Math.random() * 4}s`
+            }}
+          />
+        ))}
+      </div>
+      
+      <div className="absolute inset-0">
+        <div className="absolute top-0 -left-4 w-72 h-72 bg-purple-500 rounded-full mix-blend-screen filter blur-xl opacity-20 animate-blob" />
+        <div className="absolute top-0 -right-4 w-72 h-72 bg-pink-500 rounded-full mix-blend-screen filter blur-xl opacity-20 animate-blob animation-delay-2000" />
+        <div className="absolute -bottom-8 left-20 w-72 h-72 bg-indigo-500 rounded-full mix-blend-screen filter blur-xl opacity-20 animate-blob animation-delay-4000" />
+      </div>
+
+      <div className="relative h-screen flex flex-col items-center p-4">
+        <div className="w-full max-w-4xl mx-auto">
+          <Button
+            onClick={() => router.push('/')}
+            className="mb-4 w-fit bg-purple-600 hover:bg-purple-700"
+          >
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Back
+          </Button>
+
+          <Card className="flex-grow bg-gray-900/50 border-purple-500/20 backdrop-blur-xl h-[80vh]">
+            <CardContent className="p-6 flex flex-col h-full">
+              <div className="flex items-center justify-center mb-6">
+                <Avatar className="h-12 w-12 mr-4">
+                  <AvatarImage src={chatbot.avatar} alt={chatbot.name} />
+                  <AvatarFallback>{chatbot.name[0]}</AvatarFallback>
+                </Avatar>
+                <h2 className="text-2xl font-bold text-white">{chatbot.name}</h2>
               </div>
-            ))}
-            <div ref={messagesEndRef} />
-          </div>
-          <form onSubmit={handleSendMessage} className="flex gap-2">
-            <Input
-              type="text"
-              placeholder="Type your message..."
-              value={inputMessage}
-              onChange={(e) => setInputMessage(e.target.value)}
-              className="flex-grow bg-gray-800 text-white border-purple-500/50"
-              disabled={isLoading}
-            />
-            <Button 
-              type="submit" 
-              className="bg-purple-600 hover:bg-purple-700"
-              disabled={isLoading}
-            >
-              {isLoading ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <Send className="h-4 w-4" />
-              )}
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
+              <div className="flex-grow overflow-y-auto mb-4 space-y-4 scrollbar-thin scrollbar-thumb-purple-500/20 scrollbar-track-transparent">
+                {messages.map((message) => (
+                  <div
+                    key={message.id}
+                    className={`flex items-end gap-2 ${
+                      message.sender === 'user' ? 'justify-end' : 'justify-start'
+                    }`}
+                  >
+                    {message.sender === 'bot' && (
+                      <Avatar className="h-8 w-8 mr-2">
+                        <AvatarImage src={chatbot.avatar} alt={chatbot.name} />
+                        <AvatarFallback>{chatbot.name[0]}</AvatarFallback>
+                      </Avatar>
+                    )}
+                    <div
+                      className={`max-w-[70%] p-3 rounded-2xl ${
+                        message.sender === 'user'
+                          ? 'bg-purple-600 text-white rounded-tr-none'
+                          : 'bg-gray-700 text-gray-200 rounded-tl-none'
+                      }`}
+                    >
+                      {message.text}
+                    </div>
+                    {message.sender === 'user' && (
+                      <Avatar className="h-8 w-8 ml-2">
+                        <AvatarFallback>U</AvatarFallback>
+                      </Avatar>
+                    )}
+                  </div>
+                ))}
+                <div ref={messagesEndRef} />
+              </div>
+              <form onSubmit={handleSendMessage} className="flex gap-2 mt-auto">
+                <Input
+                  type="text"
+                  placeholder="Type your message..."
+                  value={inputMessage}
+                  onChange={(e) => setInputMessage(e.target.value)}
+                  className="flex-grow bg-gray-800 text-white border-purple-500/50"
+                  disabled={isLoading}
+                />
+                <Button 
+                  type="submit" 
+                  className="bg-purple-600 hover:bg-purple-700"
+                  disabled={isLoading}
+                >
+                  {isLoading ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Send className="h-4 w-4" />
+                  )}
+                </Button>
+              </form>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
     </div>
   )
 }
