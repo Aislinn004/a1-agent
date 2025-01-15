@@ -136,13 +136,13 @@ export default function ChatInterface({ chatId }: { chatId: string }) {
         <div className="w-full max-w-4xl mx-auto">
           <Button
             onClick={() => router.push('/')}
-            className="mb-4 w-fit bg-purple-600 hover:bg-purple-700"
+            className="mb-4 w-fit bg-purple-600 hover:bg-purple-700 rounded-full px-6"
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back
           </Button>
 
-          <Card className="flex-grow bg-gray-900/50 border-purple-500/20 backdrop-blur-xl h-[80vh]">
+          <Card className="flex-grow bg-gray-900/50 border-purple-500/20 backdrop-blur-xl h-[80vh] rounded-3xl">
             <CardContent className="p-6 flex flex-col h-full">
               <div className="flex items-center justify-center mb-6">
                 <Avatar className="h-12 w-12 mr-4">
@@ -155,27 +155,27 @@ export default function ChatInterface({ chatId }: { chatId: string }) {
                 {messages.map((message) => (
                   <div
                     key={message.id}
-                    className={`flex items-end gap-2 ${
+                    className={`flex items-start gap-2 ${
                       message.sender === 'user' ? 'justify-end' : 'justify-start'
                     }`}
                   >
                     {message.sender === 'bot' && (
-                      <Avatar className="h-8 w-8 mr-2">
+                      <Avatar className="h-8 w-8 mt-1 mr-2 flex-shrink-0">
                         <AvatarImage src={chatbot.avatar} alt={chatbot.name} />
                         <AvatarFallback>{chatbot.name[0]}</AvatarFallback>
                       </Avatar>
                     )}
                     <div
-                      className={`max-w-[70%] p-3 rounded-2xl ${
+                      className={`max-w-[70%] p-3 ${
                         message.sender === 'user'
-                          ? 'bg-purple-600 text-white rounded-tr-none'
-                          : 'bg-gray-700 text-gray-200 rounded-tl-none'
+                          ? 'bg-purple-600 text-white rounded-2xl rounded-tr-md'
+                          : 'bg-gray-700 text-gray-200 rounded-2xl rounded-tl-md'
                       }`}
                     >
                       {message.text}
                     </div>
                     {message.sender === 'user' && (
-                      <Avatar className="h-8 w-8 ml-2">
+                      <Avatar className="h-8 w-8 mt-1 ml-2 flex-shrink-0">
                         <AvatarFallback>U</AvatarFallback>
                       </Avatar>
                     )}
@@ -189,12 +189,12 @@ export default function ChatInterface({ chatId }: { chatId: string }) {
                   placeholder="Type your message..."
                   value={inputMessage}
                   onChange={(e) => setInputMessage(e.target.value)}
-                  className="flex-grow bg-gray-800 text-white border-purple-500/50"
+                  className="flex-grow bg-gray-800 text-white border-purple-500/50 rounded-full px-6"
                   disabled={isLoading}
                 />
                 <Button 
                   type="submit" 
-                  className="bg-purple-600 hover:bg-purple-700"
+                  className="bg-purple-600 hover:bg-purple-700 rounded-full px-6"
                   disabled={isLoading}
                 >
                   {isLoading ? (
