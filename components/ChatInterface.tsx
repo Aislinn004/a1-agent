@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { ArrowLeft, Send, Loader2 } from 'lucide-react'
+import { ArrowLeft, Send, Loader2, History, X, Trash2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -13,6 +13,7 @@ interface Message {
   id: number
   text: string
   sender: 'user' | 'bot'
+  timestamp?: Date
 }
 
 const chatbots = {
@@ -24,11 +25,29 @@ const chatbots = {
 export default function ChatInterface({ chatId }: { chatId: string }) {
   const [messages, setMessages] = useState<Message[]>([])
   const [inputMessage, setInputMessage] = useState('')
+  const [showHistory, setShowHistory] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
 
   const chatbot = chatbots[chatId as keyof typeof chatbots] || chatbots.random
+
+  const saveMessages = (newMessages: Message[]) => {
+    localStorage.setItem(`chat-history-${chatId}`, JSON.stringify(newMessages))
+  }
+
+  useEffect(() => {
+    const savedMessages = localStorage.getItem(`chat-history-${chatId}`)
+    if (savedMessages) {
+      setMessages(JSON.parse(savedMessages))
+    }
+  }, [chatId])
+
+  useEffect(() => {
+    if (messages.length > 0) {
+      saveMessages(messages)
+    }
+  }, [messages, chatId])
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -36,44 +55,42 @@ export default function ChatInterface({ chatId }: { chatId: string }) {
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (inputMessage.trim() === '' || isLoading) return
+    if (!inputMessage.trim() || isLoading) return
 
-    const userMessage: Message = {
+    const newMessage: Message = {
       id: Date.now(),
       text: inputMessage,
       sender: 'user',
+      timestamp: new Date()
     }
 
-    setMessages((prevMessages) => [...prevMessages, userMessage])
+    setMessages(prev => [...prev, newMessage])
     setInputMessage('')
     setIsLoading(true)
 
     try {
       const response = await sendMessage(inputMessage, chatId)
-      
       const botMessage: Message = {
         id: Date.now() + 1,
         text: response,
         sender: 'bot',
+        timestamp: new Date()
       }
-      setMessages((prevMessages) => [...prevMessages, botMessage])
+      setMessages(prev => [...prev, botMessage])
     } catch (error) {
-      console.error('Error in handleSendMessage:', error)
-      const errorMessage: Message = {
-        id: Date.now() + 1,
-        text: error instanceof Error 
-          ? `错误: ${error.message}` 
-          : "抱歉，我现在遇到了一些技术问题，请稍后再试。",
-        sender: 'bot',
-      }
-      setMessages((prevMessages) => [...prevMessages, errorMessage])
+      console.error('Error sending message:', error)
     } finally {
       setIsLoading(false)
     }
   }
 
+  const clearHistory = () => {
+    setMessages([]);
+    localStorage.removeItem(`chat-history-${chatId}`);
+  }
+
   return (
-    <div className="min-h-screen relative overflow-hidden bg-zinc-900">
+    <div className="min-h-screen bg-zinc-900 text-white relative">
       <div className="absolute inset-0 bg-gradient-to-b from-zinc-900 via-purple-950/20 to-zinc-900" />
       
       <div className="starfield">
@@ -132,78 +149,142 @@ export default function ChatInterface({ chatId }: { chatId: string }) {
         <div className="absolute -bottom-8 left-20 w-72 h-72 bg-indigo-500 rounded-full mix-blend-screen filter blur-xl opacity-20 animate-blob animation-delay-4000" />
       </div>
 
-      <div className="relative h-screen flex flex-col items-center p-4">
-        <div className="w-full max-w-4xl mx-auto">
-          <Button
-            onClick={() => router.push('/')}
-            className="mb-4 w-fit bg-purple-600 hover:bg-purple-700 rounded-full px-6"
-          >
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back
-          </Button>
-
-          <Card className="flex-grow bg-gray-900/50 border-purple-500/20 backdrop-blur-xl h-[80vh] rounded-3xl">
-            <CardContent className="p-6 flex flex-col h-full">
-              <div className="flex items-center justify-center mb-6">
-                <Avatar className="h-12 w-12 mr-4">
-                  <AvatarImage src={chatbot.avatar} alt={chatbot.name} />
-                  <AvatarFallback>{chatbot.name[0]}</AvatarFallback>
-                </Avatar>
-                <h2 className="text-2xl font-bold text-white">{chatbot.name}</h2>
-              </div>
-              <div className="flex-grow overflow-y-auto mb-4 space-y-4 scrollbar-thin scrollbar-thumb-purple-500/20 scrollbar-track-transparent">
-                {messages.map((message) => (
-                  <div
-                    key={message.id}
-                    className={`flex items-start gap-2 ${
-                      message.sender === 'user' ? 'justify-end' : 'justify-start'
-                    }`}
-                  >
-                    {message.sender === 'bot' && (
-                      <Avatar className="h-8 w-8 mt-1 mr-2 flex-shrink-0">
-                        <AvatarImage src={chatbot.avatar} alt={chatbot.name} />
-                        <AvatarFallback>{chatbot.name[0]}</AvatarFallback>
-                      </Avatar>
-                    )}
-                    <div
-                      className={`max-w-[70%] p-3 ${
-                        message.sender === 'user'
-                          ? 'bg-purple-600 text-white rounded-2xl rounded-tr-md'
-                          : 'bg-gray-700 text-gray-200 rounded-2xl rounded-tl-md'
-                      }`}
+      <div className="container max-w-6xl mx-auto px-4 py-8 relative z-10">
+        <div className="space-y-4">
+          <Card className="bg-gray-900/50 border-purple-500/20 backdrop-blur-xl rounded-3xl">
+            <CardContent className="p-6">
+              <div className="flex gap-6 h-[80vh]">
+                <div className="flex-1 flex flex-col">
+                  <div className="flex justify-between items-center mb-6">
+                    <Button
+                      variant="ghost"
+                      className="text-white hover:bg-purple-500/20 rounded-xl"
+                      onClick={() => router.push('/')}
                     >
-                      {message.text}
-                    </div>
-                    {message.sender === 'user' && (
-                      <Avatar className="h-8 w-8 mt-1 ml-2 flex-shrink-0">
-                        <AvatarFallback>U</AvatarFallback>
-                      </Avatar>
-                    )}
+                      <ArrowLeft className="h-4 w-4 mr-2" />
+                      Back
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      className="text-white hover:bg-purple-500/20 rounded-xl"
+                      onClick={() => setShowHistory(!showHistory)}
+                    >
+                      <History className="h-4 w-4 mr-2" />
+                      History
+                    </Button>
                   </div>
-                ))}
-                <div ref={messagesEndRef} />
+
+                  <div className="flex-grow overflow-y-auto space-y-4 mb-4 pr-4 custom-scrollbar">
+                    {messages.map((message) => (
+                      <div
+                        key={message.id}
+                        className={`flex ${
+                          message.sender === 'user' ? 'justify-end' : 'justify-start'
+                        }`}
+                      >
+                        <div className={`flex ${message.sender === 'user' ? 'flex-row-reverse' : 'flex-row'} items-start gap-2 max-w-[80%]`}>
+                          {message.sender === 'bot' && (
+                            <Avatar className="h-8 w-8 mt-1">
+                              <AvatarImage src={chatbot.avatar} />
+                              <AvatarFallback>{chatbot.name[0]}</AvatarFallback>
+                            </Avatar>
+                          )}
+                          <div
+                            className={`px-4 py-2 rounded-2xl ${
+                              message.sender === 'user'
+                                ? 'bg-purple-600 text-white'
+                                : 'bg-gray-800 text-gray-100'
+                            }`}
+                          >
+                            {message.text}
+                          </div>
+                          {message.sender === 'user' && (
+                            <Avatar className="h-8 w-8 mt-1">
+                              <AvatarFallback>U</AvatarFallback>
+                            </Avatar>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                    <div ref={messagesEndRef} />
+                  </div>
+
+                  <form onSubmit={handleSendMessage} className="flex gap-2">
+                    <Input
+                      type="text"
+                      placeholder="Type your message..."
+                      value={inputMessage}
+                      onChange={(e) => setInputMessage(e.target.value)}
+                      className="flex-grow bg-gray-800 text-white border-purple-500/50 rounded-xl px-6"
+                      disabled={isLoading}
+                    />
+                    <Button 
+                      type="submit" 
+                      className="bg-purple-600 hover:bg-purple-700 rounded-xl px-6"
+                      disabled={isLoading}
+                    >
+                      {isLoading ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <Send className="h-4 w-4" />
+                      )}
+                    </Button>
+                  </form>
+                </div>
+
+                {showHistory && (
+                  <div className="w-72 border-l border-purple-500/20 pl-4">
+                    <div className="flex justify-between items-center mb-4">
+                      <h3 className="text-sm font-semibold">Chat History</h3>
+                      <div className="flex gap-2">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="relative text-xs text-purple-300 hover:text-purple-200 
+                            bg-purple-500/10 hover:bg-purple-500/20 rounded-lg px-3 h-6 
+                            flex items-center gap-1 overflow-hidden transition-all duration-300
+                            group active:scale-95 active:translate-y-0.5"
+                          onClick={clearHistory}
+                        >
+                          <span className="absolute inset-0 bg-gradient-to-r from-purple-500/0 
+                            via-purple-500/10 to-purple-500/0 group-hover:via-purple-500/20 
+                            animate-shine"></span>
+                          <Trash2 className="h-3 w-3" />
+                          一键清空
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="hover:bg-purple-500/20 h-6 w-6 p-0 rounded-lg"
+                          onClick={() => setShowHistory(false)}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                    <div className="space-y-2 overflow-y-auto max-h-[calc(80vh-6rem)] thin-scrollbar">
+                      {messages.map((msg) => (
+                        <div
+                          key={msg.id}
+                          className={`text-xs p-3 rounded-xl ${
+                            msg.sender === 'user' ? 'bg-purple-500/20' : 'bg-gray-800/50'
+                          }`}
+                        >
+                          <div className="font-medium mb-1">
+                            {msg.sender === 'user' ? 'You' : chatbot.name}
+                          </div>
+                          <div className="line-clamp-2">{msg.text}</div>
+                          {msg.timestamp && (
+                            <div className="text-[10px] text-gray-400 mt-1">
+                              {new Date(msg.timestamp).toLocaleString()}
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
-              <form onSubmit={handleSendMessage} className="flex gap-2 mt-auto">
-                <Input
-                  type="text"
-                  placeholder="Type your message..."
-                  value={inputMessage}
-                  onChange={(e) => setInputMessage(e.target.value)}
-                  className="flex-grow bg-gray-800 text-white border-purple-500/50 rounded-full px-6"
-                  disabled={isLoading}
-                />
-                <Button 
-                  type="submit" 
-                  className="bg-purple-600 hover:bg-purple-700 rounded-full px-6"
-                  disabled={isLoading}
-                >
-                  {isLoading ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <Send className="h-4 w-4" />
-                  )}
-                </Button>
-              </form>
             </CardContent>
           </Card>
         </div>
