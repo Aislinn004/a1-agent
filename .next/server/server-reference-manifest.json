@@ -1,0 +1,34 @@
+{
+  "node": {
+    "19e57803b7c79bcf536a6644c1ef2c97db116b95": {
+      "workers": {
+        "app/chat/[id]/page": "(action-browser)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22%2FUsers%2Fsy%2FDocuments%2FGitHub%2Fa1-agent%2Fapp%2Factions.ts%22%2C%5B%22testModels%22%2C%22sendMessage%22%5D%5D%5D&__client_imported__=true!"
+      },
+      "layer": {
+        "app/chat/[id]/page": "action-browser"
+      }
+    },
+    "333f4caf56af3d93e0b3adee03a5d1549033bc53": {
+      "workers": {
+        "app/chat/[id]/page": "(action-browser)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22%2FUsers%2Fsy%2FDocuments%2FGitHub%2Fa1-agent%2Fapp%2Factions.ts%22%2C%5B%22testModels%22%2C%22sendMessage%22%5D%5D%5D&__client_imported__=true!",
+        "app/page": "(rsc)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22%2FUsers%2Fsy%2FDocuments%2FGitHub%2Fa1-agent%2Fapp%2Factions.ts%22%2C%5B%22sendMessage%22%2C%22testAvailableModels%22%5D%5D%5D&__client_imported__=!"
+      },
+      "layer": {
+        "app/chat/[id]/page": "action-browser",
+        "app/page": "rsc"
+      }
+    },
+    "75b87db8259ff15084d97891a2d0bf7a3e19b3a6": {
+      "workers": {
+        "app/chat/[id]/page": "(action-browser)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22%2FUsers%2Fsy%2FDocuments%2FGitHub%2Fa1-agent%2Fapp%2Factions.ts%22%2C%5B%22testModels%22%2C%22sendMessage%22%5D%5D%5D&__client_imported__=true!",
+        "app/page": "(rsc)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22%2FUsers%2Fsy%2FDocuments%2FGitHub%2Fa1-agent%2Fapp%2Factions.ts%22%2C%5B%22sendMessage%22%2C%22testAvailableModels%22%5D%5D%5D&__client_imported__=!"
+      },
+      "layer": {
+        "app/chat/[id]/page": "action-browser",
+        "app/page": "rsc"
+      }
+    }
+  },
+  "edge": {},
+  "encryptionKey": "X2K3F3NcU2RNw5n3immEEO84oFxPRBUS8kiyYzJqF1U="
+}
