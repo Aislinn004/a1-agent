@@ -223,3 +223,87 @@ html {
   pointer-events: none;
 }
 
+/* 头像呼吸灯效果 */
+@keyframes pulse-glow {
+  0% {
+    opacity: 0.4;
+    transform: scale(1.02);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(1.05);
+  }
+  100% {
+    opacity: 0.4;
+    transform: scale(1.02);
+  }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* 文字发光动画 */
+@keyframes text-glow {
+  0% {
+    filter: drop-shadow(0 0 0.5rem rgba(168, 85, 247, 0.1));
+  }
+  50% {
+    filter: drop-shadow(0 0 1rem rgba(168, 85, 247, 0.3));
+  }
+  100% {
+    filter: drop-shadow(0 0 0.5rem rgba(168, 85, 247, 0.1));
+  }
+}
+
+.animate-text-glow {
+  animation: text-glow 3s ease-in-out infinite;
+}
+
+.animation-delay-150 {
+  animation-delay: 150ms;
+}
+
+/* 文字渐变背景动画 */
+@keyframes gradient-flow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.bg-gradient-text {
+  background-size: 200% auto;
+  animation: gradient-flow 3s ease infinite;
+}
+
+/* 修改文字发光动画为更强的效果 */
+@keyframes text-glow-strong {
+  0% {
+    filter: drop-shadow(0 0 0.8rem rgba(168, 85, 247, 0.2));
+    opacity: 0.8;
+  }
+  50% {
+    filter: drop-shadow(0 0 1.5rem rgba(168, 85, 247, 0.4));
+    opacity: 1;
+  }
+  100% {
+    filter: drop-shadow(0 0 0.8rem rgba(168, 85, 247, 0.2));
+    opacity: 0.8;
+  }
+}
+
+.animate-text-glow-strong {
+  animation: text-glow-strong 4s ease-in-out infinite;
+}
+
+/* 平滑过渡效果 */
+.transition-all {
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+

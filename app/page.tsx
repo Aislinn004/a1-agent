@@ -1,9 +1,49 @@
+'use client'
+
 import Image from "next/image"
 import Link from "next/link"
 import { ArrowRight } from 'lucide-react'
 import ImageCarousel from '@/components/ImageCarousel'
+import { useState, useEffect } from 'react'
 
 export default function ChatRoomSelection() {
+  const [textIndex, setTextIndex] = useState(0);
+
+  const bottomTexts = [
+    {
+      zh: "来和AI小伙伴们聊天吧！选择你喜欢的聊天室开启对话 ✨",
+      en: "Chat with AI friends! Choose your favorite room to start a conversation"
+    },
+    {
+      zh: "每个AI助手都有独特性格，等你来发掘有趣的对话 🎭",
+      en: "Each AI assistant has a unique personality waiting for you to explore"
+    },
+    {
+      zh: "想听笑话？解答疑惑？或是单纯找人聊天？我们都在这里 🌟",
+      en: "Want to hear jokes? Solve puzzles? Or just chat? We're all here"
+    },
+    {
+      zh: "三个性格迥异的AI，带来不一样的对话体验 🎪",
+      en: "Three distinct AI personalities bring different chatting experiences"
+    },
+    {
+      zh: "来场脑洞大开的对话，或是解答专业问题，由你选择 🎯",
+      en: "Have a creative chat or solve professional problems, it's your choice"
+    },
+    {
+      zh: "让AI助手们陪你度过愉快的聊天时光 🌈",
+      en: "Let AI assistants accompany you through delightful conversations"
+    }
+  ];
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTextIndex((prev) => (prev + 1) % bottomTexts.length);
+    }, 4000);
+
+    return () => clearInterval(timer);
+  }, []);
+
   return (
     <div className="min-h-screen relative overflow-hidden">
       {/* 背景渐变层 */}
@@ -153,13 +193,27 @@ export default function ChatRoomSelection() {
           </div>
 
           {/* Bottom Text */}
-          <div className="text-center space-y-2 relative z-10">
-            <p className="text-gray-300 text-base">
-              请选择你的漫游聊天室，今天想去哪里探索呢？
-            </p>
-            <p className="text-gray-500 text-sm">
-              Please select your roaming chat room, where would you like to explore today?
-            </p>
+          <div className="text-center space-y-2 relative z-10 mt-4">
+            {bottomTexts.map((text, index) => (
+              <div
+                key={index}
+                className={`transition-all duration-1000 absolute inset-x-0 
+                  ${index === textIndex 
+                    ? 'opacity-100 transform translate-y-0' 
+                    : 'opacity-0 transform translate-y-4'
+                  }`}
+              >
+                <p className="text-sm text-transparent bg-clip-text bg-gradient-to-r 
+                  from-purple-200/80 to-pink-200/80 animate-text-glow-strong mb-1">
+                  {text.zh}
+                </p>
+                <p className="text-xs text-transparent bg-clip-text bg-gradient-to-r 
+                  from-purple-300/60 to-pink-300/60 animate-text-glow-strong animation-delay-150">
+                  {text.en}
+                </p>
+              </div>
+            ))}
+            <div className="h-16"></div>
           </div>
         </div>
       </div>
